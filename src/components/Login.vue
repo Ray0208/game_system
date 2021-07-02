@@ -70,7 +70,7 @@ export default {
     },
     // 登录
     login() {
-      this.$refs.loginFormRef.validate((valid) => {
+      this.$refs.loginFormRef.validate(valid => {
         // 表单校验成功
         if (valid) {
           // 账号密码校验成功
@@ -80,6 +80,7 @@ export default {
           ) {
             this.$message.success('登录成功！')
             window.sessionStorage.setItem('token', token)
+            window.sessionStorage.setItem('role', '超级管理员')
             this.$router.push('/home')
           } else {
             this.$message.error('登录失败！')

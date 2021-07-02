@@ -2,15 +2,23 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../components/Login.vue'
 import Home from '../components/Home.vue'
+import Welcome from '../components/Welcome.vue'
+import Users from '../components/Users.vue'
+import Admins from '../components/Admins.vue'
 // 导入全局样式表
 import '../assets/css/global.css'
 // 导入字体图标样式表
-import '../assets/font/font_007i71y3dqjpx/iconfont.css'
+import '../assets/font/font_oljbkqn65i8/iconfont.css'
 
 // 配置axios
 import axios from 'axios'
 // 配置请求的根路径
 // axios.defaults.baseURL = ''
+// axios请求拦截器
+axios.interceptors.request.use(config => {
+  config.headers.Authorization = window.sessionStorage.getItem('token')
+  return config
+})
 Vue.prototype.$http = axios
 
 Vue.use(VueRouter)
@@ -18,7 +26,25 @@ Vue.use(VueRouter)
 const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', component: Login },
-  { path: '/home', component: Home }
+  {
+    path: '/home',
+    component: Home,
+    redirect: '/welcome',
+    children: [
+      {
+        path: '/welcome',
+        component: Welcome
+      },
+      {
+        path: '/admins',
+        component: Admins
+      },
+      {
+        path: '/users',
+        component: Users
+      }
+    ]
+  }
 ]
 
 const router = new VueRouter({

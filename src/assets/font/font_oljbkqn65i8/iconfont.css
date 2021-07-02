@@ -1,6 +1,6 @@
 @font-face {
   font-family: "iconfont"; /* Project id  */
-  src: url('iconfont.ttf?t=1625120720168') format('truetype');
+  src: url('iconfont.ttf?t=1625134969614') format('truetype');
 }
 
 .iconfont {
@@ -13,11 +13,21 @@
 
 .icon-mima:before {
   content: "\e60f";
-  font-size: 14px;
-  padding-left: 5px;
 }
 
-.icon-touxiang:before {
-  content: "\e608";
+.icon-user-group:before {
+  content: "\e610";
+}
+
+.icon-xiazaimoban:before {
+  content: "\e517";
+}
+
+.icon-quanxian:before {
+  content: "\e60a";
+}
+
+.icon--luyinguanli:before {
+  content: "\e635";
 }
 

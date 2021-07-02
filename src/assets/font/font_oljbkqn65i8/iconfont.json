@@ -1,0 +1,44 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1249063",
+      "name": "密码",
+      "font_class": "mima",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "3283550",
+      "name": "用户组",
+      "font_class": "user-group",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "8634407",
+      "name": "下载模板",
+      "font_class": "xiazaimoban",
+      "unicode": "e517",
+      "unicode_decimal": 58647
+    },
+    {
+      "icon_id": "14843441",
+      "name": "权限",
+      "font_class": "quanxian",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "20556107",
+      "name": "-录音管理",
+      "font_class": "-luyinguanli",
+      "unicode": "e635",
+      "unicode_decimal": 58933
+    }
+  ]
+}
