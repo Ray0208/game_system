@@ -15,14 +15,14 @@
         <el-table-column label="路径" prop="path"></el-table-column>
         <el-table-column label="等级">
           <template slot-scope="scope">
-            <el-button v-if="scope.row.powerLevel === 1" type="primary" plain
-              >一级</el-button
+            <el-tag v-if="scope.row.powerLevel === 1"
+              >一级</el-tag
             >
-            <el-button v-if="scope.row.powerLevel === 2" type="success" plain
-              >二级</el-button
+            <el-tag v-if="scope.row.powerLevel === 2" type="success"
+              >二级</el-tag
             >
-            <el-button v-if="scope.row.powerLevel === 3" type="warning" plain
-              >三级</el-button
+            <el-tag v-if="scope.row.powerLevel === 3" type="warning"
+              >三级</el-tag
             >
           </template>
         </el-table-column>

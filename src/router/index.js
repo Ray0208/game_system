@@ -6,10 +6,13 @@ import Welcome from '../components/Welcome.vue'
 import Users from '../components/Users.vue'
 import Admins from '../components/Admins.vue'
 import Power from '../components/Power.vue'
+import Modules from '../components/modules.vue'
 // 导入全局样式表
 import '../assets/css/global.css'
 // 导入字体图标样式表
 import '../assets/font/font_oljbkqn65i8/iconfont.css'
+// 导入树表控件
+import TreeTable from 'vue-table-with-tree-grid'
 
 // 配置axios
 import axios from 'axios'
@@ -23,6 +26,8 @@ axios.interceptors.request.use(config => {
 Vue.prototype.$http = axios
 
 Vue.use(VueRouter)
+
+Vue.component('tree-table', TreeTable)
 
 const routes = [
   { path: '/', redirect: '/login' },
@@ -47,6 +52,10 @@ const routes = [
       {
         path: '/powers',
         component: Power
+      },
+      {
+        path: '/moduleList',
+        component: Modules
       }
     ]
   }

@@ -31,13 +31,8 @@ const menuList = [
     id: 2,
     children: [
       {
-        childName: '模板类型',
+        childName: '模板分类',
         id: 30,
-        path: 'moduleStyles'
-      },
-      {
-        childName: '模板列表',
-        id: 31,
         path: 'moduleList'
       }
     ]

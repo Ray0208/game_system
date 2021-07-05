@@ -97,8 +97,8 @@
         </el-table-column>
         <el-table-column label="权限">
           <template>
-            <el-button type="primary" size="mini" plain>一级</el-button>
-            <el-button type="success" size="mini" plain>二级</el-button>
+            <el-tag>一级</el-tag>
+            <el-tag type="success">二级</el-tag>
           </template>
         </el-table-column>
       </el-table>
