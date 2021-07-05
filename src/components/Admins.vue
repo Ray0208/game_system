@@ -323,9 +323,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
-// .el-table{
-//   /deep/ .cell{
-//     font-size:12px
-//   }
-// }
+/*  .el-table{
+   /deep/ .cell{
+     font-size:12px
+   }
+ } */
 </style>

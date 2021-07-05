@@ -5,6 +5,7 @@ import Home from '../components/Home.vue'
 import Welcome from '../components/Welcome.vue'
 import Users from '../components/Users.vue'
 import Admins from '../components/Admins.vue'
+import Power from '../components/Power.vue'
 // 导入全局样式表
 import '../assets/css/global.css'
 // 导入字体图标样式表
@@ -42,6 +43,10 @@ const routes = [
       {
         path: '/users',
         component: Users
+      },
+      {
+        path: '/powers',
+        component: Power
       }
     ]
   }

@@ -1,10 +1,106 @@
 <template>
-  <h1>Welcome!</h1>
+  <div class="welcome_page">
+    <div class="clock">
+      <p class="date">{{ date }}</p>
+      <p class="time">{{ time }}</p>
+      <p class="text">欢迎使用后台管理系统</p>
+    </div>
+  </div>
 </template>
 
 <script>
-export default {}
+const schedule = require('node-schedule')
+export default {
+  data() {
+    return {
+      time: '',
+      date: '',
+      week: [
+        '星期日',
+        '星期一',
+        '星期二',
+        '星期三',
+        '星期四',
+        '星期五',
+        '星期六'
+      ]
+    }
+  },
+  created() {
+    this.updateTime()
+    // 设置定时器
+    const scheduleCronstyle = () => {
+      schedule.scheduleJob('* * * * * *', () => {
+        setInterval(this.updateTime, 0)
+      })
+    }
+    scheduleCronstyle()
+  },
+  methods: {
+    // 将时间转为字符串，并返回指定位数
+    zeroPadding(num, digit) {
+      var zero = ''
+
+      for (var i = 0; i < digit; i++) {
+        zero += '0'
+      }
+      return (zero + num).slice(-digit)
+    },
+    // 时间函数
+    updateTime() {
+      var cd = new Date()
+      this.time =
+        this.zeroPadding(cd.getHours(), 2) +
+        ':' +
+        this.zeroPadding(cd.getMinutes(), 2) +
+        ':' +
+        this.zeroPadding(cd.getSeconds(), 2)
+      this.date =
+        this.zeroPadding(cd.getFullYear(), 4) +
+        '-' +
+        this.zeroPadding(cd.getMonth() + 1, 2) +
+        '-' +
+        this.zeroPadding(cd.getDate(), 2) +
+        ' ' +
+        this.week[cd.getDay()]
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
+.welcome_page {
+  height: 100%;
+  width: 100%;
+  background: #0f3854;
+  background: radial-gradient(ellipse at center, #293a4a 0%, #293a4a 70%);
+  background-size: 100%;
+  border-radius: 10px;
+}
+
+.clock {
+  font-family: 'Share Tech Mono', monospace;
+  color: #fff;
+  text-align: center;
+  position: absolute;
+  left: 55%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  color: #daf6ff;
+  text-shadow: 0 0 20px rgba(10, 175, 230, 1), 0 0 20px rgba(10, 175, 230, 0);
+  .time {
+    letter-spacing: 0.05em;
+    font-size: 80px;
+    padding: 5px 0;
+  }
+  .date {
+    letter-spacing: 0.1em;
+    font-size: 24px;
+  }
+  .text {
+    letter-spacing: 0.1em;
+    font-size: 12px;
+    padding: 20px 0 0;
+  }
+}
 </style>

@@ -116,7 +116,7 @@ export default {
     // 监听pageSize改变的事件
     handleSizeChange(newSize) {
       this.queryInfo.pagesize = newSize
-      this.getAdminsList()
+      this.getUsersList()
     },
     // 监听页码值改变的事件
     handleCurrentChange(newPage) {

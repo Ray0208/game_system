@@ -20,13 +20,8 @@ const menuList = [
     id: 1,
     children: [
       {
-        childName: '角色列表',
-        id: 20,
-        path: 'roles'
-      },
-      {
         childName: '权限列表',
-        id: 21,
+        id: 20,
         path: 'powers'
       }
     ]
