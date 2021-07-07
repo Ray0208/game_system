@@ -48,10 +48,18 @@
         </template>
         <!-- 操作 -->
         <template slot="opt">
-          <el-button type="primary" icon="el-icon-edit" size="mini"
+          <el-button
+            type="primary"
+            icon="el-icon-edit"
+            size="mini"
+            @click="showEditDialog"
             >编辑</el-button
           >
-          <el-button type="danger" icon="el-icon-delete" size="mini"
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            size="mini"
+            @click="isDelete"
             >删除</el-button
           >
         </template>
@@ -102,6 +110,29 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="addDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addModuleContent">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 编辑对话框 -->
+    <el-dialog title="编辑分类" :visible.sync="editDialogVisible" width="30%">
+      <el-form :model="editForm">
+        <el-form-item label="分类名" prop="name">
+          <el-input v-model="editForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="状态" prop="state">
+          <el-switch
+            v-model="editForm.value"
+            active-color="#409eff"
+            inactive-color="#dcdfe6"
+          >
+          </el-switch>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editDialogVisible = false"
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -182,7 +213,14 @@ export default {
       },
       // 选中父级分类的ID数组
       selectedKeys: [],
-      isResouceShow: 0
+      isResouceShow: 0,
+      // 编辑分类对话框控制变量
+      editDialogVisible: false,
+      // 编辑分类表单对象
+      editForm: {
+        name: '',
+        state: ''
+      }
     }
   },
   created() {
@@ -316,6 +354,30 @@ export default {
       this.getPidData()
       this.addDialogVisible = false
       console.log(modulesList)
+    },
+    // 弹出编辑框
+    showEditDialog() {
+      this.editDialogVisible = true
+    },
+    // 是否删除分类
+    isDelete() {
+      this.$confirm('此操作将永久删除该分类, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     }
   }
 }

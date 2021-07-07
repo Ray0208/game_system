@@ -65,6 +65,7 @@
                 type="primary"
                 icon="el-icon-edit"
                 size="mini"
+                @click="showChangeDialog"
               ></el-button>
             </el-tooltip>
             <!-- 删除 -->
@@ -78,6 +79,7 @@
                 type="danger"
                 icon="el-icon-delete"
                 size="mini"
+                @click="isDelete"
               ></el-button>
             </el-tooltip>
             <!-- 权限分配 -->
@@ -91,6 +93,7 @@
                 type="warning"
                 icon="el-icon-setting"
                 size="mini"
+                @click="showPowersDialog"
               ></el-button>
             </el-tooltip>
           </template>
@@ -142,6 +145,46 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="addDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addAdmin">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 编辑对话框 -->
+    <el-dialog title="编辑信息" :visible.sync="changeDialogVisible" width="50%">
+      <el-form :model="changeForm" ref="changeFormRef" label-width="70px">
+        <el-form-item label="登录名" prop="adminName">
+          <el-input v-model="changeForm.adminName"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="changeForm.password"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="changeForm.email"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="changeDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="changeDialogVisible = false"
+          >确 定</el-button
+        >
+      </div>
+    </el-dialog>
+
+    <!-- 分配权限对话框 -->
+    <el-dialog title="权限分配" :visible.sync="powersDialogVisible" width="30%">
+      <el-form :model="powersForm" label-width="70px">
+        <el-form-item label="权限">
+          <el-checkbox-group v-model="powersForm.type">
+            <el-checkbox label="一级" name="type"></el-checkbox>
+            <el-checkbox label="二级" name="type"></el-checkbox>
+            <el-checkbox label="三级" name="type"></el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="powersDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="powersDialogVisible = false"
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -223,6 +266,20 @@ export default {
             trigger: 'blur'
           }
         ]
+      },
+      // 控制编辑管理员对话框的显示与隐藏
+      changeDialogVisible: false,
+      // 修改管理员信息表单对象
+      changeForm: {
+        adminName: '',
+        password: '',
+        email: ''
+      },
+      // 控制分配权限对话框的显示与隐藏
+      powersDialogVisible: false,
+      // 分配权限表单对象
+      powersForm: {
+        type: []
       }
     }
   },
@@ -317,6 +374,34 @@ export default {
         this.getAdminsList()
         this.addDialogVisible = !this.addDialogVisible
       })
+    },
+    // 弹出编辑对话框
+    showChangeDialog() {
+      this.changeDialogVisible = true
+    },
+    // 是否删除该管理员
+    isDelete() {
+      this.$confirm('此操作将永久删除该管理员, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    // 弹出分配权限对话框
+    showPowersDialog() {
+      this.powersDialogVisible = true
     }
   }
 }

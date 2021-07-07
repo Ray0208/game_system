@@ -91,6 +91,7 @@ export default {
     // 登出
     loginout() {
       window.sessionStorage.clear()
+      this.$message.success('已退出登录！')
       this.$router.push('/login')
     },
     // 菜单栏的展开与折叠
