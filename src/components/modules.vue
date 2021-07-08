@@ -165,6 +165,7 @@
                   placeholder="请选择"
                   @change="showKeyWordList()"
                 >
+                  <el-option value="全部"></el-option>
                   <el-option
                     v-for="(item, i) in moduleStyle"
                     :key="i"
@@ -195,6 +196,10 @@
             <!-- 表格区域 -->
             <el-table :data="keyWordList" border style="width: 600px;">
               <el-table-column label="#" type="index"></el-table-column>
+              <el-table-column
+                label="模板类型"
+                prop="partent_content"
+              ></el-table-column>
               <el-table-column label="关键词">
                 <template slot-scope="scope">
                   <div v-if="editFlag2 !== scope.row.id">
@@ -278,20 +283,18 @@
         label-width="80px"
       >
         <el-form-item label="模板类型" prop="moduleStyle">
-          <template>
-            <el-select
-              v-model="addKeyWordForm.moduleStyle"
-              filterable
-              placeholder="请选择"
+          <el-select
+            v-model="addKeyWordForm.moduleStyle"
+            filterable
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="(item, i) in moduleStyle"
+              :key="i"
+              :value="item.content"
             >
-              <el-option
-                v-for="(item, i) in moduleStyle"
-                :key="i"
-                :value="item.content"
-              >
-              </el-option>
-            </el-select>
-          </template>
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="关键词" prop="keyWord">
           <el-input v-model="addKeyWordForm.keyWord"></el-input>
@@ -340,8 +343,8 @@ export default {
       },
       // 添加关键词规则
       addKeyWordRules: {
-        mopduleStyle: [
-          { required: true, trigger: 'blur', message: '请选择模板类型' }
+        moduleStyle: [
+          { required: true, trigger: 'change', message: '请选择模板类型' }
         ],
         keyWord: [
           { required: true, trigger: 'blur', message: '请输入关键词内容' }
@@ -361,7 +364,7 @@ export default {
     this.roomStyle = roomStyle
     this.moduleStyle = moduleStyle
     this.keyWordTotal = keyWordTotal
-    this.moduleValue = moduleStyle[0].content
+    this.moduleValue = '全部'
   },
   methods: {
     // 控制标签页的切换
@@ -463,41 +466,87 @@ export default {
     },
     // 显示关键词列表
     showKeyWordList() {
-      for (let i = 0; i < this.moduleStyle.length; i++) {
-        if (this.moduleStyle[i].content === this.moduleValue) {
-          const keyWordList = this.moduleStyle[i].children
-          if (!this.queryInfo.query) {
-            this.keyWordList = []
-            const indexBegin =
-              (this.queryInfo.pagenum - 1) * this.queryInfo.pagesize
-            const indexFinal = this.queryInfo.pagenum * this.queryInfo.pagesize
-            for (let i = 0; i < keyWordTotal; i++) {
-              if (i >= indexBegin && i < indexFinal) {
-                this.keyWordList.push(keyWordList[i])
-              } else {
-                continue
-              }
+      if (this.moduleValue === '全部') {
+        this.keyWordList = []
+        for (let i = 0; i < this.moduleStyle.length; i++) {
+          for (let j = 0; j < this.moduleStyle[i].children.length; j++) {
+            this.keyWordList.push(this.moduleStyle[i].children[j])
+          }
+        }
+        this.keyWordTotal = this.keyWordList.length
+        const keyWordList = this.keyWordList
+        if (!this.queryInfo.query) {
+          this.keyWordList = []
+          const indexBegin =
+            (this.queryInfo.pagenum - 1) * this.queryInfo.pagesize
+          const indexFinal = this.queryInfo.pagenum * this.queryInfo.pagesize
+          for (let i = 0; i < this.keyWordTotal; i++) {
+            if (i >= indexBegin && i < indexFinal) {
+              this.keyWordList.push(keyWordList[i])
+            } else {
+              continue
             }
-          } else {
-            // 搜索管理员
-            const resultList = []
-            for (let i = 0; i < keyWordTotal; i++) {
-              if (keyWordList[i].content === this.queryInfo.query) {
-                resultList.push(keyWordList[i])
-              }
+          }
+        } else {
+          // 搜索关键词
+          const resultList = []
+          for (let i = 0; i < this.keyWordTotal; i++) {
+            if (keyWordList[i].content === this.queryInfo.query) {
+              resultList.push(keyWordList[i])
             }
-            this.keyWordList = []
-            const indexBegin =
-              (this.queryInfo.pagenum - 1) * this.queryInfo.pagesize
-            const indexFinal = this.queryInfo.pagenum * this.queryInfo.pagesize
-            for (let i = 0; i < resultList.length; i++) {
-              if (i >= indexBegin && i < indexFinal) {
-                this.keyWordList.push(resultList[i])
-              } else {
-                continue
-              }
+          }
+          this.keyWordList = []
+          const indexBegin =
+            (this.queryInfo.pagenum - 1) * this.queryInfo.pagesize
+          const indexFinal = this.queryInfo.pagenum * this.queryInfo.pagesize
+          for (let i = 0; i < resultList.length; i++) {
+            if (i >= indexBegin && i < indexFinal) {
+              this.keyWordList.push(resultList[i])
+            } else {
+              continue
             }
-            this.keyWordTotal = resultList.length
+          }
+          this.keyWordTotal = resultList.length
+        }
+      } else {
+        for (let i = 0; i < this.moduleStyle.length; i++) {
+          if (this.moduleStyle[i].content === this.moduleValue) {
+            const keyWordList = this.moduleStyle[i].children
+            if (!this.queryInfo.query) {
+              this.keyWordList = []
+              const indexBegin =
+                (this.queryInfo.pagenum - 1) * this.queryInfo.pagesize
+              const indexFinal =
+                this.queryInfo.pagenum * this.queryInfo.pagesize
+              for (let i = 0; i < keyWordTotal; i++) {
+                if (i >= indexBegin && i < indexFinal) {
+                  this.keyWordList.push(keyWordList[i])
+                } else {
+                  continue
+                }
+              }
+            } else {
+              // 搜索关键词
+              const resultList = []
+              for (let i = 0; i < keyWordTotal; i++) {
+                if (keyWordList[i].content === this.queryInfo.query) {
+                  resultList.push(keyWordList[i])
+                }
+              }
+              this.keyWordList = []
+              const indexBegin =
+                (this.queryInfo.pagenum - 1) * this.queryInfo.pagesize
+              const indexFinal =
+                this.queryInfo.pagenum * this.queryInfo.pagesize
+              for (let i = 0; i < resultList.length; i++) {
+                if (i >= indexBegin && i < indexFinal) {
+                  this.keyWordList.push(resultList[i])
+                } else {
+                  continue
+                }
+              }
+              this.keyWordTotal = resultList.length
+            }
           }
         }
       }
@@ -561,7 +610,6 @@ export default {
         }
         this.addDialogVisible = false
         this.$message.success('添加关键词成功！')
-        console.log(this.moduleStyle)
       })
     },
     // 监听pageSize改变的事件
