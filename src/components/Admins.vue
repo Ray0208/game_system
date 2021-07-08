@@ -52,8 +52,8 @@
             ></el-switch>
           </template>
         </el-table-column>
-        <el-table-column v-if="role === '超级管理员'" label="操作">
-          <template>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
             <!-- 编辑 -->
             <el-tooltip
               effect="dark"
@@ -65,7 +65,7 @@
                 type="primary"
                 icon="el-icon-edit"
                 size="mini"
-                @click="showChangeDialog"
+                @click="showChangeDialog(scope.row)"
               ></el-button>
             </el-tooltip>
             <!-- 删除 -->
@@ -82,7 +82,7 @@
                 @click="isDelete"
               ></el-button>
             </el-tooltip>
-            <!-- 权限分配 -->
+            <!-- 权限分配
             <el-tooltip
               effect="dark"
               content="分配权限"
@@ -95,15 +95,15 @@
                 size="mini"
                 @click="showPowersDialog"
               ></el-button>
-            </el-tooltip>
+            </el-tooltip> -->
           </template>
         </el-table-column>
-        <el-table-column label="权限">
+        <!-- <el-table-column label="权限">
           <template>
             <el-tag>一级</el-tag>
             <el-tag type="success">二级</el-tag>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
 
       <!-- 分页区域 -->
@@ -149,27 +149,81 @@
     </el-dialog>
 
     <!-- 编辑对话框 -->
-    <el-dialog title="编辑信息" :visible.sync="changeDialogVisible" width="50%">
-      <el-form :model="changeForm" ref="changeFormRef" label-width="70px">
-        <el-form-item label="登录名" prop="adminName">
-          <el-input v-model="changeForm.adminName"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="changeForm.password"></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="changeForm.email"></el-input>
-        </el-form-item>
-      </el-form>
+    <el-dialog title="编辑信息" :visible.sync="changeDialogVisible" width="30%">
+      <el-collapse v-model="activeName" accordion>
+        <el-collapse-item title="登录名" name="1">
+          <el-row :gutter="20" style="margin: 10px 0 10px 0;">
+            <el-col :span="2.5"
+              ><span style="color:rgb(126, 122, 122)">登录名</span></el-col
+            >
+            <el-col :span="14">
+              <el-input v-model="changeForm.adminName" size="mini"></el-input
+            ></el-col>
+            <el-col :span="4">
+              <el-button type="primary" size="mini"
+                >确认修改</el-button
+              >
+            </el-col>
+          </el-row>
+        </el-collapse-item>
+        <el-collapse-item title="密码" name="2">
+          <!-- 旧密码区域 -->
+          <el-row :gutter="20" style="margin: 10px 0 10px 0;">
+            <el-col :span="4"
+              ><span style="color:rgb(126, 122, 122)">旧密码</span></el-col
+            >
+            <el-col :span="14">
+              <el-input v-model="changeForm.oldPassword" size="mini"></el-input
+            ></el-col>
+          </el-row>
+          <!-- 新密码区域 -->
+          <el-row :gutter="20" style="margin: 10px 0 10px 0;">
+            <el-col :span="4"
+              ><span style="color:rgb(126, 122, 122)">新密码</span></el-col
+            >
+            <el-col :span="14">
+              <el-input v-model="changeForm.newPassword1" size="mini"></el-input
+            ></el-col>
+          </el-row>
+          <!-- 确认新密码区域 -->
+          <el-row :gutter="20" style="margin: 10px 0 10px 0;">
+            <el-col :span="4"
+              ><span style="color:rgb(126, 122, 122)">确认新密码</span></el-col
+            >
+            <el-col :span="14">
+              <el-input v-model="changeForm.newPassword2" size="mini"></el-input
+            ></el-col>
+          </el-row>
+          <!-- 修改按钮区域 -->
+          <el-button
+            type="primary"
+            size="mini"
+            style="position: relative;left: 315px;top:10px"
+            >确认修改</el-button
+          >
+        </el-collapse-item>
+        <el-collapse-item title="邮箱" name="3">
+          <el-row :gutter="20" style="margin: 10px 0 10px 0;">
+            <el-col :span="2.5"
+              ><span style="color:rgb(126, 122, 122)">邮箱</span></el-col
+            >
+            <el-col :span="14">
+              <el-input v-model="changeForm.email" size="mini"></el-input
+            ></el-col>
+            <el-col :span="4">
+              <el-button type="primary" size="mini">确认修改</el-button>
+            </el-col>
+          </el-row>
+        </el-collapse-item>
+      </el-collapse>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="changeDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="changeDialogVisible = false"
-          >确 定</el-button
+          >返回</el-button
         >
       </div>
     </el-dialog>
 
-    <!-- 分配权限对话框 -->
+    <!-- 分配权限对话框
     <el-dialog title="权限分配" :visible.sync="powersDialogVisible" width="30%">
       <el-form :model="powersForm" label-width="70px">
         <el-form-item label="权限">
@@ -186,7 +240,7 @@
           >确 定</el-button
         >
       </span>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -271,16 +325,20 @@ export default {
       changeDialogVisible: false,
       // 修改管理员信息表单对象
       changeForm: {
+        id: '',
         adminName: '',
-        password: '',
-        email: ''
+        newPassword1: '',
+        newPassword2: '',
+        email: '',
+        oldPassword: ''
       },
       // 控制分配权限对话框的显示与隐藏
-      powersDialogVisible: false,
+      //   powersDialogVisible: false,
       // 分配权限表单对象
-      powersForm: {
-        type: []
-      }
+      //   powersForm: {
+      //     type: []
+      //   }
+      activeName: ''
     }
   },
   created() {
@@ -376,8 +434,12 @@ export default {
       })
     },
     // 弹出编辑对话框
-    showChangeDialog() {
+    showChangeDialog(item) {
       this.changeDialogVisible = true
+      this.changeForm.adminName = item.name
+      this.changeForm.email = item.email
+      this.changeForm.oldPassword = item.password
+      this.changeForm.id = item.id
     },
     // 是否删除该管理员
     isDelete() {
@@ -398,11 +460,11 @@ export default {
             message: '已取消删除'
           })
         })
-    },
-    // 弹出分配权限对话框
-    showPowersDialog() {
-      this.powersDialogVisible = true
     }
+    // 弹出分配权限对话框
+    // showPowersDialog() {
+    //   this.powersDialogVisible = true
+    // }
   }
 }
 </script>

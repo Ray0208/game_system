@@ -16,17 +16,6 @@ const menuList = [
     ]
   },
   {
-    authName: '权限管理',
-    id: 1,
-    children: [
-      {
-        childName: '权限列表',
-        id: 20,
-        path: 'powers'
-      }
-    ]
-  },
-  {
     authName: '模板管理',
     id: 2,
     children: [

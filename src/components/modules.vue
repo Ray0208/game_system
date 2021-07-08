@@ -9,364 +9,403 @@
 
     <!-- 卡片视图区域 -->
     <el-card>
-      <!-- 添加分类按钮区域 -->
-      <el-row>
-        <el-col>
-          <el-button type="primary" @click="addModule">添加分类</el-button>
-        </el-col>
-      </el-row>
-
-      <!-- 表格区域 -->
-      <tree-table
-        :data="modulesList"
-        :columns="columns"
-        :selection-type="false"
-        :expand-type="false"
-        show-index
-        index-text="#"
-        border
-        :show-row-hover="false"
-      >
-        <!-- 是否有效 -->
-        <template slot="isok" slot-scope="scope">
-          <i
-            class="el-icon-success"
-            v-if="scope.row.module_deleted === false"
-            style="color:#409eff"
-          ></i>
-          <i class="el-icon-error" v-else style="color:red"></i>
-        </template>
-        <!-- 排序 -->
-        <template slot="order" slot-scope="scope">
-          <el-tag v-if="scope.row.module_level === 0" size="mini">一级</el-tag>
-          <el-tag type="success" v-if="scope.row.module_level === 1" size="mini"
-            >二级</el-tag
-          >
-          <el-tag type="warning" v-if="scope.row.module_level === 2" size="mini"
-            >三级</el-tag
-          >
-        </template>
-        <!-- 操作 -->
-        <template slot="opt">
-          <el-button
-            type="primary"
-            icon="el-icon-edit"
-            size="mini"
-            @click="showEditDialog"
-            >编辑</el-button
-          >
-          <el-button
-            type="danger"
-            icon="el-icon-delete"
-            size="mini"
-            @click="isDelete"
-            >删除</el-button
-          >
-        </template>
-      </tree-table>
-
-      <!-- 分页区域 -->
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="queryInfo.pagenum"
-        :page-sizes="[2, 3, 5, 10]"
-        :page-size="queryInfo.pagesize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-      >
-      </el-pagination>
+      <template>
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+          <el-tab-pane label="房间类型" name="first">
+            <!-- 按钮区域 -->
+            <el-row :gutter="20">
+              <el-col :span="4">
+                <el-input
+                  placeholder="请输入内容"
+                  v-model="addRoomStyle"
+                  clearable
+                >
+                </el-input>
+              </el-col>
+              <el-col :span="4">
+                <el-button type="primary" @click="addStyle">添加</el-button>
+              </el-col>
+            </el-row>
+            <!-- 表格区域 -->
+            <el-table :data="roomStyle" border style="width: 600px;">
+              <el-table-column label="#" type="index"></el-table-column>
+              <el-table-column label="房间类型">
+                <template slot-scope="scope">
+                  <div v-if="editFlag !== scope.row.id">
+                    {{ scope.row.content }}
+                  </div>
+                  <div v-if="editFlag === scope.row.id">
+                    <el-input
+                      v-model="scope.row.content"
+                      size="mini"
+                      style="width: 220px;"
+                    >
+                      <template slot="append">
+                        <el-button type="info" @click="confirmChangeStyle"
+                          >确认</el-button
+                        >
+                      </template>
+                    </el-input>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <!-- 编辑 -->
+                  <el-tooltip
+                    effect="dark"
+                    content="编辑"
+                    placement="top"
+                    :enterable="false"
+                  >
+                    <el-button
+                      type="primary"
+                      icon="el-icon-edit"
+                      size="mini"
+                      @click="editRoomStyle(scope.row.id)"
+                    ></el-button>
+                  </el-tooltip>
+                  <!-- 删除 -->
+                  <el-tooltip
+                    effect="dark"
+                    content="删除"
+                    placement="top"
+                    :enterable="false"
+                  >
+                    <el-button
+                      type="danger"
+                      icon="el-icon-delete"
+                      size="mini"
+                      @click="deleteStyle(scope.row.id)"
+                    ></el-button>
+                  </el-tooltip>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
+          <el-tab-pane label="模板分类" name="second">
+            <!-- 按钮区域 -->
+            <el-row :gutter="20">
+              <el-col :span="4">
+                <el-input
+                  placeholder="请输入内容"
+                  v-model="addModuleStyle"
+                  clearable
+                >
+                </el-input>
+              </el-col>
+              <el-col :span="4">
+                <el-button type="primary" @click="addModule">添加</el-button>
+              </el-col>
+            </el-row>
+            <!-- 表格区域 -->
+            <el-table :data="moduleStyle" border style="width: 600px;">
+              <el-table-column label="#" type="index"></el-table-column>
+              <el-table-column label="模板类型">
+                <template slot-scope="scope">
+                  <div v-if="editFlag1 !== scope.row.id">
+                    {{ scope.row.content }}
+                  </div>
+                  <div v-if="editFlag1 === scope.row.id">
+                    <el-input
+                      v-model="scope.row.content"
+                      size="mini"
+                      style="width: 220px;"
+                    >
+                      <template slot="append">
+                        <el-button type="info" @click="confirmChangeModule"
+                          >确认</el-button
+                        >
+                      </template>
+                    </el-input>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <!-- 编辑 -->
+                  <el-tooltip
+                    effect="dark"
+                    content="编辑"
+                    placement="top"
+                    :enterable="false"
+                  >
+                    <el-button
+                      type="primary"
+                      icon="el-icon-edit"
+                      size="mini"
+                      @click="editModuleStyle(scope.row.id)"
+                    ></el-button>
+                  </el-tooltip>
+                  <!-- 删除 -->
+                  <el-tooltip
+                    effect="dark"
+                    content="删除"
+                    placement="top"
+                    :enterable="false"
+                  >
+                    <el-button
+                      type="danger"
+                      icon="el-icon-delete"
+                      size="mini"
+                      @click="deleteModule(scope.row.id)"
+                    ></el-button>
+                  </el-tooltip>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
+          <el-tab-pane label="关键词" name="third">
+            <!-- 选择框和添加按钮区域 -->
+            <el-row :gutter="20">
+              <el-col :span="2">
+                <el-select
+                  v-model="moduleValue"
+                  filterable
+                  placeholder="请选择"
+                  @change="showKeyWordList()"
+                >
+                  <el-option
+                    v-for="(item, i) in moduleStyle"
+                    :key="i"
+                    :value="item.content"
+                  >
+                  </el-option>
+                </el-select>
+              </el-col>
+              <el-col :span="5">
+                <el-input
+                  placeholder="请输入内容"
+                  v-model="queryInfo.query"
+                  clearable
+                  @clear="showKeyWordList"
+                >
+                  <el-button
+                    slot="append"
+                    icon="el-icon-search"
+                    @click="showKeyWordList"
+                  ></el-button> </el-input
+              ></el-col>
+              <el-col :span="3">
+                <el-button type="primary" @click="showAddDialog"
+                  >添加关键词</el-button
+                >
+              </el-col>
+            </el-row>
+            <!-- 表格区域 -->
+            <el-table :data="keyWordList" border style="width: 600px;">
+              <el-table-column label="#" type="index"></el-table-column>
+              <el-table-column label="关键词">
+                <template slot-scope="scope">
+                  <div v-if="editFlag2 !== scope.row.id">
+                    {{ scope.row.content }}
+                  </div>
+                  <div v-if="editFlag2 === scope.row.id">
+                    <el-input
+                      v-model="scope.row.content"
+                      size="mini"
+                      style="width: 220px;"
+                    >
+                      <template slot="append">
+                        <el-button type="info" @click="confirmChangeKeyWord"
+                          >确认</el-button
+                        >
+                      </template>
+                    </el-input>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <!-- 编辑 -->
+                  <el-tooltip
+                    effect="dark"
+                    content="编辑"
+                    placement="top"
+                    :enterable="false"
+                  >
+                    <el-button
+                      type="primary"
+                      icon="el-icon-edit"
+                      size="mini"
+                      @click="editKeyWord(scope.row.id)"
+                    ></el-button>
+                  </el-tooltip>
+                  <!-- 删除 -->
+                  <el-tooltip
+                    effect="dark"
+                    content="删除"
+                    placement="top"
+                    :enterable="false"
+                  >
+                    <el-button
+                      type="danger"
+                      icon="el-icon-delete"
+                      size="mini"
+                      @click="deleteKeyWord(scope.row.id)"
+                    ></el-button>
+                  </el-tooltip>
+                </template>
+              </el-table-column>
+            </el-table>
+            <!-- 分页区域 -->
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="queryInfo.pagenum"
+              :page-sizes="[1, 2, 5, 10]"
+              :page-size="queryInfo.pagesize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="keyWordTotal"
+            >
+            </el-pagination>
+          </el-tab-pane>
+        </el-tabs>
+      </template>
     </el-card>
 
-    <!-- 添加分类的对话框 -->
+    <!-- 添加关键词对话框 -->
     <el-dialog
-      title="添加分类"
+      title="添加关键词"
+      @close="addDialogClosed"
       :visible.sync="addDialogVisible"
-      width="50%"
-      @close="resetFrom"
+      width="30%"
     >
       <el-form
-        :model="addModuleForm"
-        :rules="addModuleFormRules"
-        ref="addModuleForm"
-        label-width="100px"
+        ref="addKeyWordRef"
+        :rules="addKeyWordRules"
+        :model="addKeyWordForm"
+        label-width="80px"
       >
-        <el-form-item label="分类名称" prop="module_name">
-          <el-input v-model="addModuleForm.module_name"></el-input>
+        <el-form-item label="模板类型" prop="moduleStyle">
+          <template>
+            <el-select
+              v-model="addKeyWordForm.moduleStyle"
+              filterable
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="(item, i) in moduleStyle"
+                :key="i"
+                :value="item.content"
+              >
+              </el-option>
+            </el-select>
+          </template>
         </el-form-item>
-        <el-form-item label="父级分类">
-          <!-- option用来指定数据源 -->
-          <!-- props用来指定配置对象 -->
-          <el-cascader
-            :key="isResouceShow"
-            v-model="selectedKeys"
-            :options="parentModuleList"
-            :props="cascaderProps"
-            @change="parentModuleChanged"
-            clearable
-          ></el-cascader>
+        <el-form-item label="关键词" prop="keyWord">
+          <el-input v-model="addKeyWordForm.keyWord"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addModuleContent">确 定</el-button>
-      </span>
-    </el-dialog>
-
-    <!-- 编辑对话框 -->
-    <el-dialog title="编辑分类" :visible.sync="editDialogVisible" width="30%">
-      <el-form :model="editForm">
-        <el-form-item label="分类名" prop="name">
-          <el-input v-model="editForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="状态" prop="state">
-          <el-switch
-            v-model="editForm.value"
-            active-color="#409eff"
-            inactive-color="#dcdfe6"
-          >
-          </el-switch>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editDialogVisible = false"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="addKeyWord">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { modules, total } from '../assets/config/modules.js'
+import { roomStyle } from '../assets/config/roomStyle.js'
+import { moduleStyle, keyWordTotal } from '../assets/config/moduleStyle.js'
 export default {
   data() {
     return {
-      // 查询条件
-      queryInfo: {
-        pagenum: 1,
-        pagesize: 5
-      },
-      // 模板分类的数据列表
-      modulesList: [],
-      // 分类总数
-      total: 0,
-      // 为table指定列的定义
-      columns: [
-        {
-          label: '分类名称',
-          prop: 'module_name'
-        },
-        {
-          label: '是否有效',
-          // 表示当前列定义为模板列
-          type: 'template',
-          // 表示当前这一列使用模板名称
-          template: 'isok'
-        },
-        {
-          label: '排序',
-          // 表示当前列定义为模板列
-          type: 'template',
-          // 表示当前这一列使用模板名称
-          template: 'order'
-        },
-        {
-          label: '操作',
-          // 表示当前列定义为模板列
-          type: 'template',
-          // 表示当前这一列使用模板名称
-          template: 'opt'
-        }
-      ],
-      // 添加分类对话框控制变量
+      // 标签页激活标志
+      activeName: 'first',
+      // 房间类型列表
+      roomStyle: [],
+      // 添加房间类型输入框绑定变量
+      addRoomStyle: '',
+      // 点击编辑的房间类型ID
+      editFlag: '',
+      // 模板类型列表
+      moduleStyle: [],
+      // 添加房间类型输入框绑定变量
+      addModuleStyle: '',
+      // 点击编辑的模板分类ID
+      editFlag1: '',
+      // 显示选择框的内容
+      moduleValue: '',
+      // 关键词列表
+      keyWordList: [],
+      // 点击编辑的关键词ID
+      editFlag2: '',
+      // 控制显示对话框变量
       addDialogVisible: false,
-      // 添加分类的表单数据对象
-      addModuleForm: {
-        // 将要添加的分类的名称
-        module_name: '',
-        // 父级分类的ID
-        module_pid: 0,
-        // 分类的等级，默认要添加的是一级分类
-        module_level: 0
+      // 添加关键词表单对象
+      addKeyWordForm: {
+        moduleStyle: '',
+        keyWord: ''
       },
-      // 添加分类表单的验证规则对象
-      addModuleFormRules: {
-        module_name: [
-          {
-            required: true,
-            message: '请输入分类名称',
-            trigger: 'blur'
-          }
+      // 添加关键词规则
+      addKeyWordRules: {
+        mopduleStyle: [
+          { required: true, trigger: 'blur', message: '请选择模板类型' }
+        ],
+        keyWord: [
+          { required: true, trigger: 'blur', message: '请输入关键词内容' }
         ]
       },
-      // 父级分类列表
-      parentModuleList: [],
-      // 指定级联选择器的配置对象
-      cascaderProps: {
-        expandTrigger: 'hover',
-        checkStrictly: 'true',
-        value: 'module_id',
-        label: 'module_name',
-        children: 'children'
+      // 获取关键词列表参数
+      queryInfo: {
+        query: '',
+        pagenum: 1,
+        pagesize: 2
       },
-      // 选中父级分类的ID数组
-      selectedKeys: [],
-      isResouceShow: 0,
-      // 编辑分类对话框控制变量
-      editDialogVisible: false,
-      // 编辑分类表单对象
-      editForm: {
-        name: '',
-        state: ''
-      }
+      // 关键词总数
+      keyWordTotal: 0
     }
   },
   created() {
-    window.sessionStorage.setItem('modules', JSON.stringify(modules))
-    window.sessionStorage.setItem('modulesTotal', total)
-    this.getModulesList()
-    this.getPidData()
+    this.roomStyle = roomStyle
+    this.moduleStyle = moduleStyle
+    this.keyWordTotal = keyWordTotal
+    this.moduleValue = moduleStyle[0].content
   },
   methods: {
-    // 获取模板列表数据
-    getModulesList() {
-      const modulesList = JSON.parse(window.sessionStorage.getItem('modules'))
-      const total = Number(window.sessionStorage.getItem('modulesTotal'))
-      this.total = total
-      // 根据页码和页大小获取当前可视列表数据
-      this.modulesList = []
-      const indexBegin = (this.queryInfo.pagenum - 1) * this.queryInfo.pagesize
-      const indexFinal = this.queryInfo.pagenum * this.queryInfo.pagesize
-      for (let i = 0; i < total; i++) {
-        if (i >= indexBegin && i < indexFinal) {
-          this.modulesList.push(modulesList[i])
-        } else {
-          continue
-        }
+    // 控制标签页的切换
+    handleClick(tab, event) {
+      if (this.activeName === 'first') {
+        this.roomStyle = roomStyle
+      } else if (this.activeName === 'second') {
+        this.moduleStyle = moduleStyle
+      } else if (this.activeName === 'third') {
+        this.moduleStyle = moduleStyle
+        this.showKeyWordList()
       }
-      this.total = total
     },
-    // 监听pageSize改变的事件
-    handleSizeChange(newSize) {
-      this.queryInfo.pagesize = newSize
-      this.getModulesList()
+    // 编辑房间类型
+    editRoomStyle(id) {
+      this.editFlag = id
     },
-    // 监听页码值改变的事件
-    handleCurrentChange(newPage) {
-      this.queryInfo.pagenum = newPage
-      this.getModulesList()
+    // 确认修改房间类型
+    confirmChangeStyle() {
+      this.editFlag = ''
     },
-    // 添加分类
-    addModule() {
-      this.addDialogVisible = true
-    },
-    // 获取父级分类的数据
-    getPidData() {
-      const modulesList = JSON.parse(window.sessionStorage.getItem('modules'))
-      for (let i = 0; i < modulesList.length; i++) {
-        if (modulesList[i].children) {
-          for (let j = 0; j < modulesList[i].children.length; j++) {
-            if (modulesList[i].children[j].children) {
-              delete modulesList[i].children[j].children
-            }
-          }
+    // 添加房间类型
+    addStyle() {
+      if (this.addRoomStyle) {
+        const newStyle = {
+          id: 5,
+          content: this.addRoomStyle
         }
+        this.roomStyle.push(newStyle)
       }
-      this.parentModuleList = modulesList
     },
-    // 选择项发生变化出发这个函数
-    parentModuleChanged() {
-      console.log(this.selectedKeys)
-    },
-    // 关闭对话框，重置表单
-    resetFrom() {
-      this.$refs.addModuleForm.resetFields()
-      this.selectedKeys = ''
-    },
-    // 添加模板
-    addModuleContent() {
-      const modulesList = JSON.parse(window.sessionStorage.getItem('modules'))
-      var total = Number(window.sessionStorage.getItem('modulesTotal'))
-      // 添加一级分类
-      if (this.addModuleForm.module_name && this.selectedKeys.length === 0) {
-        this.isResouceShow++
-        const newModule = {
-          module_id: Math.ceil(Math.random() * 1000) + 60,
-          module_name: this.addModuleForm.module_name,
-          module_level: 0,
-          module_pid: -1,
-          module_deleted: false,
-          children: []
-        }
-        modulesList.push(newModule)
-        total++
-      } else if (
-        this.addModuleForm.module_name &&
-        this.selectedKeys.length === 1
-      ) {
-        // 添加二级分类
-        // 根据父级id查找插入位置
-        this.isResouceShow++
-        for (let i = 0; i < modulesList.length; i++) {
-          if (modulesList[i].module_id === this.selectedKeys[0]) {
-            const newModule = {
-              module_id: Math.ceil(Math.random() * 1000) + 60,
-              module_name: this.addModuleForm.module_name,
-              module_level: 1,
-              module_pid: this.selectedKeys[0],
-              module_deleted: false,
-              children: []
-            }
-            modulesList[i].children.push(newModule)
-          }
-        }
-      } else if (
-        this.addModuleForm.module_name &&
-        this.selectedKeys.length === 2
-      ) {
-        // 添加三级分类
-        // 根据父级id查找插入位置
-        this.isResouceShow++
-        for (let i = 0; i < modulesList.length; i++) {
-          if (modulesList[i].module_id === this.selectedKeys[0]) {
-            for (let j = 0; j < modulesList[i].children.length; j++) {
-              if (
-                modulesList[i].children[j].module_id === this.selectedKeys[1]
-              ) {
-                const newModule = {
-                  module_id: Math.ceil(Math.random() * 1000) + 60,
-                  module_name: this.addModuleForm.module_name,
-                  module_level: 2,
-                  module_pid: this.selectedKeys[1],
-                  module_deleted: false
-                }
-                modulesList[i].children[j].children.push(newModule)
-              }
-            }
-          }
-        }
-      }
-      window.sessionStorage.setItem('modules', JSON.stringify(modulesList))
-      window.sessionStorage.setItem('modulesTotal', total)
-      this.getModulesList()
-      this.getPidData()
-      this.addDialogVisible = false
-      console.log(modulesList)
-    },
-    // 弹出编辑框
-    showEditDialog() {
-      this.editDialogVisible = true
-    },
-    // 是否删除分类
-    isDelete() {
-      this.$confirm('此操作将永久删除该分类, 是否继续?', '提示', {
+    // 删除房间类型
+    deleteStyle(id) {
+      this.$confirm('此操作将永久删除该类型, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
+          for (let i = 0; i < this.roomStyle.length; i++) {
+            if (this.roomStyle[i].id === id) {
+              this.roomStyle.splice(i, 1)
+            }
+          }
           this.$message({
             type: 'success',
             message: '删除成功!'
@@ -378,17 +417,165 @@ export default {
             message: '已取消删除'
           })
         })
+    },
+    // 添加模板类型
+    addModule() {
+      if (this.addModuleStyle) {
+        const newStyle = {
+          id: 5,
+          content: this.addModuleStyle
+        }
+        this.moduleStyle.push(newStyle)
+      }
+    },
+    // 确认修改模板类型
+    confirmChangeModule() {
+      this.editFlag1 = ''
+    },
+    // 编辑模板类型
+    editModuleStyle(id) {
+      this.editFlag1 = id
+    },
+    // 删除房间类型
+    deleteModule(id) {
+      this.$confirm('此操作将永久删除该模板, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          for (let i = 0; i < this.moduleStyle.length; i++) {
+            if (this.moduleStyle[i].id === id) {
+              this.moduleStyle.splice(i, 1)
+            }
+          }
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    // 显示关键词列表
+    showKeyWordList() {
+      for (let i = 0; i < this.moduleStyle.length; i++) {
+        if (this.moduleStyle[i].content === this.moduleValue) {
+          const keyWordList = this.moduleStyle[i].children
+          if (!this.queryInfo.query) {
+            this.keyWordList = []
+            const indexBegin =
+              (this.queryInfo.pagenum - 1) * this.queryInfo.pagesize
+            const indexFinal = this.queryInfo.pagenum * this.queryInfo.pagesize
+            for (let i = 0; i < keyWordTotal; i++) {
+              if (i >= indexBegin && i < indexFinal) {
+                this.keyWordList.push(keyWordList[i])
+              } else {
+                continue
+              }
+            }
+          } else {
+            // 搜索管理员
+            const resultList = []
+            for (let i = 0; i < keyWordTotal; i++) {
+              if (keyWordList[i].content === this.queryInfo.query) {
+                resultList.push(keyWordList[i])
+              }
+            }
+            this.keyWordList = []
+            const indexBegin =
+              (this.queryInfo.pagenum - 1) * this.queryInfo.pagesize
+            const indexFinal = this.queryInfo.pagenum * this.queryInfo.pagesize
+            for (let i = 0; i < resultList.length; i++) {
+              if (i >= indexBegin && i < indexFinal) {
+                this.keyWordList.push(resultList[i])
+              } else {
+                continue
+              }
+            }
+            this.keyWordTotal = resultList.length
+          }
+        }
+      }
+    },
+    // 点击编辑关键词按钮
+    editKeyWord(id) {
+      this.editFlag2 = id
+    },
+    // 确认修改关键词
+    confirmChangeKeyWord() {
+      this.editFlag2 = ''
+    },
+    // 删除当前关键词
+    deleteKeyWord(id) {
+      this.$confirm('此操作将永久删除该关键词, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          for (let i = 0; i < this.keyWordList.length; i++) {
+            if (this.keyWordList[i].id === id) {
+              this.keyWordList.splice(i, 1)
+            }
+          }
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    // 显示添加关键词对话框
+    showAddDialog() {
+      this.addDialogVisible = true
+    },
+    // 关闭对话框重置表单
+    addDialogClosed() {
+      this.addKeyWordForm.moduleStyle = ''
+      this.$refs.addKeyWordRef.resetFields()
+    },
+    // 添加关键词
+    addKeyWord() {
+      this.$refs.addKeyWordRef.validate(valid => {
+        if (!valid) return
+        // 发起添加关键词请求
+        for (let i = 0; i < this.moduleStyle.length; i++) {
+          if (this.moduleStyle[i].content === this.addKeyWordForm.moduleStyle) {
+            const newKeyWord = {
+              id: 100,
+              parent_id: this.moduleStyle[i].id,
+              content: this.addKeyWordForm.keyWord
+            }
+            this.moduleStyle[i].children.push(newKeyWord)
+          }
+        }
+        this.addDialogVisible = false
+        this.$message.success('添加关键词成功！')
+        console.log(this.moduleStyle)
+      })
+    },
+    // 监听pageSize改变的事件
+    handleSizeChange(newSize) {
+      this.queryInfo.pagesize = newSize
+      this.showKeyWordList()
+    },
+    // 监听页码值改变的事件
+    handleCurrentChange(newPage) {
+      this.queryInfo.pagenum = newPage
+      this.showKeyWordList()
     }
   }
 }
 </script>
 
-<style lang="less" scoped>
-.zk-table {
-  margin-top: 15px;
-}
-
-.el-cascader {
-  width: 100%;
-}
-</style>
+<style lang="less" scoped></style>
