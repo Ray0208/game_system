@@ -194,7 +194,7 @@
               </el-col>
             </el-row>
             <!-- 表格区域 -->
-            <el-table :data="keyWordList" border style="width: 600px;">
+            <el-table :data="keyWordList" border style="width: 800px;">
               <el-table-column label="#" type="index"></el-table-column>
               <el-table-column
                 label="模板类型"
